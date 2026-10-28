@@ -1,0 +1,44 @@
+---
+title: "Charcoal data site locations"
+output:
+  md_document:
+    variant: gfm
+  html_document:
+    collapsed: false
+    css: "SI-md-08.css"
+    fig_caption: true
+    highlight: haddock
+    number_sections: true
+    theme: united
+    toc: false
+    toc_float: false
+  word_document:
+    fig_caption: true
+    fig_height: 5
+    fig_width: 6
+    highlight: haddock
+    reference_docx: mystyles.docx
+    toc: false
+---
+```{r MOT_spline, echo=FALSE}
+options(width = 85)
+knitr::opts_chunk$set(dev='png', dpi=300, cache=FALSE)
+pdf.options(useDingbats = TRUE)
+```
+
+# Introduction #
+
+Here we describe 
+
+# Set up #
+
+Set path and filenames:
+
+```{r pathnames}
+# paths for input .csv files -- modify as appropriate
+datapath <- "~/Projects/globalT/MOT_Splines/data"
+```
+
+```{=markdown}
+$$RSS\left(f,\lambda \right)=\sum_{i=1}^{n} {w_{i}{\left(y_{i}-f\left(x_{i}\right)\right)}^{2}}+\lambda \int {{\left[f^{\prime \prime }\left(x\right)\right]}^{2}dx,}$$
+```
