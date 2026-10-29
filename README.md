@@ -78,16 +78,6 @@ Excel files, `{Hmisc}` adds supplemental tick marks and plots, and
 ``` r
 library(readxl, writexl)
 library(Hmisc)
-```
-
-    ## 
-    ## Attaching package: 'Hmisc'
-
-    ## The following objects are masked from 'package:base':
-    ## 
-    ##     format.pval, units
-
-``` r
 library(matrixStats)
 ```
 
@@ -105,26 +95,24 @@ head(AH_long); tail(AH_long)
 ```
 
     ## # A tibble: 6 × 9
-    ##   Age_ka AgeMa Rel_err_Myr Abs_err_Myr MOT_anomaly MOT_rel_err MOT_abs_err Snapshot
-    ##    <dbl> <dbl>       <dbl>       <dbl>       <dbl>       <dbl>       <dbl> <chr>   
-    ## 1   430  0.43       0.0909      0.102       -1.99        0.559       0.750 'long'  
-    ## 2   499. 0.499      0.104       0.118       -0.870       0.431       0.660 'long'  
-    ## 3   500  0.5        0.0909      0.106       -2.09        0.574       0.761 'long'  
-    ## 4   552. 0.552      0.0618      0.0866      -1.89        0.526       0.726 'long'  
-    ## 5   558. 0.558      0.0618      0.0871      -2.04        0.547       0.741 'long'  
-    ## 6   579. 0.579      0.0618      0.0888      -1.85        0.519       0.721 'long'  
-    ## # ℹ 1 more variable: seqnum <dbl>
+    ##   Age_ka AgeMa Rel_err_Myr Abs_err_Myr MOT_anomaly MOT_rel_err MOT_abs_err Snapshot seqnum
+    ##    <dbl> <dbl>       <dbl>       <dbl>       <dbl>       <dbl>       <dbl> <chr>     <dbl>
+    ## 1   430  0.43       0.0909      0.102       -1.99        0.559       0.750 'long'      128
+    ## 2   499. 0.499      0.104       0.118       -0.870       0.431       0.660 'long'       89
+    ## 3   500  0.5        0.0909      0.106       -2.09        0.574       0.761 'long'      129
+    ## 4   552. 0.552      0.0618      0.0866      -1.89        0.526       0.726 'long'       44
+    ## 5   558. 0.558      0.0618      0.0871      -2.04        0.547       0.741 'long'       56
+    ## 6   579. 0.579      0.0618      0.0888      -1.85        0.519       0.721 'long'       45
 
     ## # A tibble: 6 × 9
-    ##   Age_ka AgeMa Rel_err_Myr Abs_err_Myr MOT_anomaly MOT_rel_err MOT_abs_err Snapshot
-    ##    <dbl> <dbl>       <dbl>       <dbl>       <dbl>       <dbl>       <dbl> <chr>   
-    ## 1  2690   2.69      0.0909       0.310      -0.31        0.313       0.590 'long'  
-    ## 2  2848.  2.85      0.0532       0.318       0.495       0.268       0.567 'long'  
-    ## 3  2868.  2.87      0.0593       0.321       0.229       0.247       0.558 'long'  
-    ## 4  2891.  2.89      0.0593       0.323       1.03        0.319       0.593 'long'  
-    ## 5  2895.  2.90      0.0593       0.324       1.38        0.367       0.620 'long'  
-    ## 6  3065.  3.06      0.0618       0.343       0.229       0.275       0.570 'long'  
-    ## # ℹ 1 more variable: seqnum <dbl>
+    ##   Age_ka AgeMa Rel_err_Myr Abs_err_Myr MOT_anomaly MOT_rel_err MOT_abs_err Snapshot seqnum
+    ##    <dbl> <dbl>       <dbl>       <dbl>       <dbl>       <dbl>       <dbl> <chr>     <dbl>
+    ## 1  2690   2.69      0.0909       0.310      -0.31        0.313       0.590 'long'      140
+    ## 2  2848.  2.85      0.0532       0.318       0.495       0.268       0.567 'long'       81
+    ## 3  2868.  2.87      0.0593       0.321       0.229       0.247       0.558 'long'       49
+    ## 4  2891.  2.89      0.0593       0.323       1.03        0.319       0.593 'long'       83
+    ## 5  2895.  2.90      0.0593       0.324       1.38        0.367       0.620 'long'       84
+    ## 6  3065.  3.06      0.0618       0.343       0.229       0.275       0.570 'long'       82
 
 ``` r
 # MOT_anomaly + 0.5C
