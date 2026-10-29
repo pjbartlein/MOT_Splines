@@ -1,7 +1,7 @@
 
 Here we show the R code that we used to reproduce Matlab `csaps()` smoothing spline fit to the Allen Hills “long shapshot” in Shackleton et
 al. (2026), and to fit an alternative optimized smoothing spline in R. A smoothing splines is a cubic spline $f\left(x_{i}\right)$ that is fit
-to\$data $y_{i}$ by minimizing a “penalized” residual sum-of-squares
+to some data $y_{i}$ by minimizing a “penalized” residual sum-of-squares
 
 $$
 RSS\left(f,\lambda \right)=\{\textsf{goodness of fit}\}+\lambda\{\textsf{roughness}\}
@@ -29,4 +29,4 @@ Again, If $λ=0$, the fitted spline simply interpolates between the $y_{i}$’s,
 
 In the case of the R function, there are three ways of specifying or describing the amount of smoothing: via $λ$; via a *spar* value, a scaleless description of the amount of smoothing which generally varies between 0 an 1; and via the equivalent degrees of freedom, $df$ (Hastie and Tibshirani, 1990, sec. 3.5), a general measure of the amount of fitting done by the spline. Low values of $df$ describe a fitted curve with fewer inflections while higher values describe a more wiggly curve.
 
-Because the internal algorithms in the R and Matlab functions, there is no direct conversion between the methods (i.e. selecting the same value of $λ$ for both will not yield equivalent results). The R function can nevertheless be used to approximate the results of applying the Matlab function by iteratively varying the *spar* parameter, and minimizing the sum-of-squared differences between the R- and Matlab-fitted smoothing splines. We use this approach below to approximate the results of from the Matlab `csaps()` using the R `smooth.spline()` function.
+Because the internal algorithms in the R and Matlab functions, there is no direct conversion between the methods (i.e. selecting the same value of $λ$ for both will not yield equivalent results). The R function can nevertheless be used to approximate the results of applying the Matlab function by iteratively varying the *spar* parameter, and minimizing the sum-of-squared differences between the R- and Matlab-fitted smoothing splines. We use this approach below to approximate the results of from the Matlab `csaps()` using the R `smooth.spline()` functio
