@@ -559,12 +559,41 @@ display: none;
 
 <div id="introduction" class="section level1" number="1">
 <h1><span class="header-section-number">1</span> Introduction</h1>
-<p>Here we show the <code>R</code> code that we used to reproduce Matlab
-<code>csaps()</code> smoothing spline fit to the Allen Hills “long
-shapshot” in Shakleton et al. (2026).</p>
 </div>
-<div id="set-up" class="section level1" number="2">
-<h1><span class="header-section-number">2</span> Set up</h1>
+<div id="introduction-1" class="section level1" number="2">
+<h1><span class="header-section-number">2</span> Introduction</h1>
+<p>Here we show the R code that we used to reproduce Matlab
+<code>csaps()</code> smoothing spline fit to the Allen Hills “long
+shapshot” in Shakleton et al. (2026), and to fit an alternative
+optimized smoothing spline in R. A moothing splines is a cubic spline
+<span class="math inline">\(`f\left(x_{i}\right)`\)</span> that is fit
+to$data <span class="math inline">\(`y_{i}`\)</span> by minimizing a
+“penalized” residual sum-of-squares <span class="math display">\[
+RSS\left(f,\lambda \right)=\{\textsf{goodness of
+fit}\}+\lambda\{\textsf{roughness}\}
+\]</span></p>
+<p>The first term represents the goodness-of-fit of the spline curve to
+the data, while the second “penalty” term describes the rigidity or
+local variability of the curve. If λ = 0, the fitted spline simply
+interpolates between the <span class="math inline">\(y_{i}\)</span>’s,
+while as λ → ∞ the penalty term increases and the optimal fitted curve
+becomes a least-squares straight line (Hastie and Tibshirani, 1990,
+p. 27).</p>
+<p>The objective function used by Matlab <code>csaps()</code> function
+is <span class="math display">\[
+RSS\left(f,\mathrm{\lambda }\right)=\left\{\ p\sum_{i=1}^{n}
+{w_{i}{\left(y_{i}-f\left(x_{i}\right)\right)}^{2}}+\left(1-p\right)\int
+{\left[f^{\prime \prime }\left(x\right)\right]}^{2}\,dx\right\}
+\]</span></p>
+<p>Where <span class="math inline">\(p\)</span> is the user-selected
+smoothing parameter, and <span class="math inline">\(p=1/\left(1+\mathrm{\lambda }\right)\)</span>.
+When <span class="math inline">\(p=0\)</span>, a straight-line fit is
+obtained (i.e. as <span class="math inline">\(λ→∞, p→0\)</span>), while
+if <span class="math inline">\(λ=0\)</span>, then <span class="math inline">\(p=1\)</span>, and the spline <span class="math inline">\((f\left(x_{i}\right))\)</span> simply interpolates
+between points.</p>
+</div>
+<div id="set-up" class="section level1" number="3">
+<h1><span class="header-section-number">3</span> Set up</h1>
 <p>Set path and filenames:</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="co"># paths for input .csv files -- modify as appropriate</span></span>
 <span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>datapath <span class="ot">&lt;-</span> <span class="st">&quot;~/Projects/globalT/MOT_Splines/data&quot;</span></span></code></pre></div>
