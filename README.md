@@ -408,3 +408,63 @@ dashed lines are the 2.5th and 97.5th percentiles (plus or minus two
 standard errors). The standard errors from the Shackleton et al.’s
 spline do not match the ones here because the bootstramp samples are not
 identical.
+
+Now replot the approximated Shackleton et al. spline including the
+fitted splines for the first 500 bootstrap replications (a sufficient
+number for examiing the nature of the replications).
+
+``` r
+# replot with first 500 replicates shown
+
+plot(AH_long$MOT_anomaly ~ AH_long$AgeMa, type = "p", pch = 16, cex = 0.8, col = "blue",
+     xlim = c(3.5, 0), ylim = c(-3.0, 3.0), xlab = "Age (Ma)", ylab = "MOT anomaly (°C)", 
+     font.main = 1, main = "Allen Hills (long) + 0.5 °C")
+minor.tick(nx = 10, tick.ratio = 0.5)
+
+# bootstrap estimates of fitted values
+set.seed(1234)
+# bootsrap CL's
+fits_bootstrap <- matrix(0, nrow=nfits, ncol = nreps)
+k <- 0; j <- 1
+for (i in 1:nreps) {
+  # print(i)
+  x_boot <- AH_long$AgeMa + rnorm(nsamp, mean = 0, sd = AH_long$Rel_err_Myr)
+  x_boot <- x_boot[order(x_boot)]
+  y_boot <- AH_long$MOT_anomaly + rnorm(nsamp, mean = 0, sd = AH_long$MOT_abs_err)
+  y_boot <- y_boot[order(x_boot)]
+  # points(x_boot, y_boot, pch = 16, cex = 0.5, col = "red")
+  
+  fit_boot <- smooth.spline(x_boot, y_boot, w = ones, spar = spar ) # df = df[1])
+  if (length(x_boot) == length(fit_boot$y)) {
+    y_pred <- predict(fit_boot, x_targ, deriv = 0)$y
+    if (i < 500) {
+      lines(x_targ, y_pred, col=adjustcolor(model_colors[j], alpha = 0.05))
+      # points(AH_long$AgeMa, y_pred, pch = 16, cex = 0.5, col = "red")
+    }
+    k <- k + 1
+    fits_bootstrap[1:nfits, k] <- y_pred[1:nfits]
+  }
+}
+
+lines(x_targ, boot_cl_01[, 2], col = model_colors[1])
+lines(x_targ, boot_cl_01[, 4], col = model_colors[1])
+lines(x_targ, boot_cl_01[, 1], lty = "dotted", lwd = 2, col = model_colors[1])
+lines(x_targ, boot_cl_01[, 5], lty = "dotted", lwd = 2, col = model_colors[1])
+lines(x_targ, boot_cl_01[, 3], lty = "dashed", col = model_colors[1])
+lines(x_targ, y_pred_curve_01, lwd=2, col=model_colors[1])
+
+lines(AH_long_spline_paper$AgeMa, AH_long_spline_paper$MOT_anomaly, lwd=2, col="blue")
+lines(AH_long_spline_paper$AgeMa, AH_long_spline_paper$MOT_lower, lwd=1, col="blue")
+lines(AH_long_spline_paper$AgeMa, AH_long_spline_paper$MOT_upper, lwd=1, col="blue")
+leg_label <- paste("Smoothing Spline, spar = ", as.character(round(spar, 3)), ", lambda = ", as.character(round(lambda[1],7)),
+                   ", df = ", as.character(round(df[1], 2)), ", AIC = ", as.character(round(AIC[1], 2)),sep="")
+legend(3.5, -2.75, legend=c(leg_label), col=c(model_colors[1]), lwd=2, bty="n")
+
+points(AH_long$MOT_anomaly ~ AH_long$AgeMa, pch = 16, cex = 0.8, col = "blue")
+```
+
+![](README_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
+
+``` r
+#dev.print(pdf, "AH_long_spline_comparison.pdf")
+```
