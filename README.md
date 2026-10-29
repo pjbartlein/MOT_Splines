@@ -1,4 +1,4 @@
-# Introduction
+## Introduction
 
 Here we show the R code that we used to reproduce Matlab `csaps()`
 smoothing spline fit to the Allen Hills “long shapshot” in Shackleton et
@@ -69,7 +69,7 @@ Matlab-fitted smoothing splines. We use this approach below to
 approximate the results of from the Matlab `csaps()` using the R
 `smooth.spline()` functio
 
-# Read data
+## Read data
 
 Load the neccessary packages. `{readxl}` and `{writexl}` read and write
 Excel files, `{Hmisc}` adds supplemental tick marks and plots, and
@@ -180,3 +180,231 @@ legend(3.5, -2.75, legend=c(leg_label), col="blue", lwd=2, bty="n")
 ``` r
 #dev.print(pdf, "AH_long_Shackleton_spline.pdf")
 ```
+
+## Set-up tasks
+
+Set target points for fitted splines:
+
+``` r
+# target pts for fitted spline
+nsamp <- length(unique(AH_long$AgeMa))
+age_max <- max(AH_long$AgeMa)
+age_min <- min(AH_long$AgeMa)
+x_targ <- seq(age_min, age_max, by = 0.005)
+head(x_targ); tail(x_targ)
+```
+
+    ## [1] 0.430 0.435 0.440 0.445 0.450 0.455
+
+    ## [1] 3.035 3.040 3.045 3.050 3.055 3.060
+
+``` r
+nfits <- length(x_targ)
+nfits
+```
+
+    ## [1] 527
+
+Set weights. `weights` weigh each observation by its uncertainty. `ones`
+weigh each observation equally
+
+``` r
+# weights
+weights <- 1/(AH_long$MOT_abs_err^2)
+ones = rep(1, length(AH_long$AgeMa))
+```
+
+Set parameters for bootstrap estimates of uncertainty
+
+``` r
+# bootstrap estimates of fitted values
+set.seed(1234)
+nreps <- 10000
+```
+
+Three curves will be fit here: 1) the approximation of the Shackleton et
+al. spline, 2) a GCV-optimized spine, and 3) and OLS linear fit. Define
+arrays and vectors to hold results:
+
+``` r
+ncurves <- 3
+
+# arrays and vectors
+fits <- matrix(0, nrow = nsamp, ncol = ncurves)
+residuals <- matrix(0, nrow = nsamp, ncol = ncurves)
+fits_bootstrap <- matrix(0, nrow=nfits, ncol = nreps)
+df <- as.numeric(rep(0, ncurves))
+lambda <- as.numeric(rep(0, ncurves))
+rss <- as.numeric(rep(0, ncurves))
+tss <- as.numeric(rep(0, ncurves))
+sigma2 <- as.numeric(rep(0, ncurves))
+AIC <- as.numeric(rep(0, ncurves))
+rsq <- as.numeric(rep(0, ncurves))
+adj_rsq <- as.numeric(rep(0, ncurves))
+F <- as.numeric(rep(0, ncurves))
+
+model_colors <- c("black", "purple", "red")
+```
+
+## Reproduce the Matlab smoothing spline with the R smoothing spline
+
+The R `smooth.spline()` equivalent of the Matlab `csaps()` spline in
+Shackleton et al. can be estimated by repeated fitting splines with
+different values of the *span* parameter, ranging from 0.0 to 2.0 by
+0.1:
+
+``` r
+# brute-force optinmization of spar value
+npts <- 201
+spar_opt <- as.numeric(seq(0.0, 2.0, by = 0.01))
+df_opt <- as.numeric(rep(0, npts))
+lambda_opt <- as.numeric(rep(0, npts))
+rss_opt <- as.numeric(rep(0, npts))
+tss_opt <- as.numeric(rep(0, npts))
+rsq_opt <- as.numeric(rep(0, npts))
+
+for (k in 1:npts) {
+  curve_01 <- smooth.spline(AH_long$AgeMa, AH_long$MOT_anomaly, w = ones, spar = spar_opt[k])
+  df_opt[k] <- curve_01$df; lambda_opt[k] <- curve_01$lambda
+  
+  y_pred <- predict(curve_01, AH_long_spline_paper$AgeMa, deriv = 0)$y
+  resid <- y_pred - (AH_long_spline_paper$MOT_anomaly)
+  rss_opt[k] <- sum(resid^2 )
+  tss_opt[k] <- sum((AH_long_spline_paper$MOT_anomaly - mean(AH_long_spline_paper$MOT_anomaly))^2)
+  rsq_opt[k] <- 1.0 - (rss_opt[k]/tss_opt[k])
+}
+```
+
+Which value of *spar* produces the best fit?
+
+``` r
+match_paper <- data.frame(spar_opt, df_opt, lambda_opt, rss_opt, tss_opt, rsq_opt)
+k_opt <- which.max(rsq_opt)
+print(k_opt)
+```
+
+    ## [1] 70
+
+``` r
+print(match_paper[k_opt, ])
+```
+
+    ##    spar_opt  df_opt   lambda_opt   rss_opt  tss_opt  rsq_opt
+    ## 70     0.69 12.4969 5.544198e-05 0.2163786 219.8993 0.999016
+
+A *spar* value of 0.69 produces the best fit to published spline.
+
+Refit the approximated spline and calculate the bootstrap confidence
+limits (while suppressing the individual fitted splines).
+
+``` r
+# Shackleton et al. spline
+
+spar <- 0.69
+curve_01 <- smooth.spline(AH_long$AgeMa, AH_long$MOT_anomaly, w = ones, 
+    spar = spar, keep.stuff = TRUE) # Shackleton et al. specs. for lambda
+y_pred_curve_01 <- predict(curve_01, x_targ, deriv = 0)$y
+y_d1_curve_01 <- predict(curve_01, x_targ, deriv = 1)$y
+y_d2_curve_01 <- predict(curve_01, x_targ, deriv = 2)$y
+df[1] <- curve_01$df; lambda[1] <- curve_01$lambda; fits[, 1] <- curve_01$y
+residuals[, 1] <- AH_long$MOT_anomaly - curve_01$y
+sigma2[1] <- sum(residuals[, 1]^2)/(nsamp - 1.0)
+rss[1] <- sum(residuals[, 1]^2 )
+tss[1] <- sum((AH_long$MOT_anomaly - mean(AH_long$MOT_anomaly))^2)
+# http://users.stat.umn.edu/~helwig/notes/smooth-spline-notes.html#aic-and-bic
+max_log_lik <- (-1.0 / (2.0 * sigma2[1])) * rss[1] - 1.0 * (nsamp / 2.0) * log(sigma2[1]) - 
+  1.0 * (nsamp / 2.0) * log(2 * pi)
+AIC[1] <- - 2.0 * max_log_lik + 2.0 * df[1]
+AIC[1] <- round(AIC[1], 2)
+print(AIC[1])
+```
+
+    ## [1] 84.92
+
+``` r
+# R-sq values
+rsq[1] <- 1 - (rss[1]/tss[1])
+adj_rsq[1] <- 1 - (rss[1] / (nsamp - df[1])) / (tss[1] / (nsamp - 1))
+rsq[1] <- round(rsq[1], digits = 3)
+adj_rsq[1] <- round(adj_rsq[1], digits = 3)
+rsq[1]; adj_rsq[1]
+```
+
+    ## [1] 0.759
+
+    ## [1] 0.715
+
+``` r
+# bootsrap CL's -- calculate but do not plot
+fits_bootstrap <- matrix(0, nrow=nfits, ncol = nreps)
+k <- 0; j <- 1
+for (i in 1:nreps) {
+  # print(i)
+  x_boot <- AH_long$AgeMa + rnorm(nsamp, mean = 0, sd = AH_long$Rel_err_Myr)
+  x_boot <- x_boot[order(x_boot)]
+  y_boot <- AH_long$MOT_anomaly + rnorm(nsamp, mean = 0, sd = AH_long$MOT_abs_err)
+  y_boot <- y_boot[order(x_boot)]
+  # points(x_boot, y_boot, pch = 16, cex = 0.5, col = "red")
+  
+  fit_boot <- smooth.spline(x_boot, y_boot, w = ones, spar = spar ) # df = df[1])
+  if (length(x_boot) == length(fit_boot$y)) {
+    y_pred <- predict(fit_boot, x_targ, deriv = 0)$y
+    # if (i < 500) {
+    #   lines(x_targ, y_pred, col=adjustcolor(model_colors[j], alpha = 0.05))
+    #   # points(AH_long$AgeMa, y_pred, pch = 16, cex = 0.5, col = "red")
+    # }
+    k <- k + 1
+    fits_bootstrap[1:nfits, k] <- y_pred[1:nfits]
+  }
+}
+
+# get the various quantiles of the fitted splines
+boot_cl_01 <- rowQuantiles(fits_bootstrap, probs = c(0.025, 0.16, 0.50, 0.84, 0.975))
+head(boot_cl_01)
+```
+
+    ##           2.5%       16%       50%        84%      97.5%
+    ## [1,] -2.118189 -1.644276 -1.225705 -0.8016999 -0.3295480
+    ## [2,] -2.091171 -1.632063 -1.226045 -0.8133095 -0.3487568
+    ## [3,] -2.064248 -1.623237 -1.226660 -0.8246394 -0.3747414
+    ## [4,] -2.036599 -1.613022 -1.227134 -0.8337606 -0.3990829
+    ## [5,] -2.015464 -1.602782 -1.225915 -0.8426400 -0.4202588
+    ## [6,] -1.992610 -1.593298 -1.227111 -0.8539710 -0.4441156
+
+``` r
+plot(AH_long$MOT_anomaly ~ AH_long$AgeMa, type = "p", pch = 16, cex = 0.8, col = "blue",
+     xlim = c(3.5, 0), ylim = c(-3.0, 3.0), xlab = "Age (Ma)", ylab = "MOT anomaly (°C)", 
+     font.main = 1, main = "Allen Hills (long) + 0.5 °C")
+minor.tick(nx = 10, tick.ratio = 0.5)
+
+# add spline from paper
+lines(AH_long_spline_paper$AgeMa, AH_long_spline_paper$MOT_anomaly, lwd=2, col="blue")
+lines(AH_long_spline_paper$AgeMa, AH_long_spline_paper$MOT_lower, lwd=1, col="blue")
+lines(AH_long_spline_paper$AgeMa, AH_long_spline_paper$MOT_upper, lwd=1, col="blue")
+leg_label <- paste("Spline from Shackleton et al. 2026 (Fig. 1)", sep="")
+legend(3.5, -2.75, legend=c(leg_label), col="blue", lwd=2, bty="n")
+
+# add now add the bootstrap CL's to plot
+lines(x_targ, boot_cl_01[, 2], col = model_colors[1])
+lines(x_targ, boot_cl_01[, 4], col = model_colors[1])
+lines(x_targ, boot_cl_01[, 1], lty = "dotted", lwd = 2, col = model_colors[1])
+lines(x_targ, boot_cl_01[, 5], lty = "dotted", lwd = 2, col = model_colors[1])
+lines(x_targ, boot_cl_01[, 3], lty = "dotted", lwd = 2, col = model_colors[1])
+lines(x_targ, y_pred_curve_01, lwd=2, col=model_colors[1])
+```
+
+![](README_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
+
+``` r
+#dev.print(pdf, "AH_long_Shackleton_spline.pdf")
+```
+
+The blue solid line in the figure (mostly hidden, except at the ends) is
+the fitted spline from Shackleton et al. while the the thick black solid
+line is the approximated spline form `spline.smooth()`. The thin black
+lines are the median and 16th and 84th percentiles (plus or minus one
+standard error) of the 10,000 bootstrap replications, while the black
+dashed lines are the 2.5th and 97.5th percentiles (plus or minus two
+standard errors). The standard errors from the Shackleton et al.’s
+spline do not match the ones here because the bootstramp samples are not
+identical.
