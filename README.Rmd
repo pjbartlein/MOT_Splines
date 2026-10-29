@@ -35,7 +35,7 @@ pdf.options(useDingbats = TRUE)
 
 Load the neccessary packages. `{readxl}` and `{writexl}` read and write Excel files, `{Hmisc}` adds supplemental tick marks and plots, and `{matrixStats}` is used to get the bootstrap confidence itervals.
 
-```{r}
+```{r, echo=TRUE, results='hide'}
 library(readxl, writexl)
 library(Hmisc)
 library(matrixStats)
