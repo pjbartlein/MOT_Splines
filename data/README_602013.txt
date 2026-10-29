@@ -1,0 +1,26 @@
+USAP-DC Dataset# 602013
+2025-12-20
+https://api.datacite.org/dois/10.15784/602013
+
+abstract:
+
+
+Instruments and devices:
+253Plus IRMS
+
+Acquisition procedures:
+Gas extraction from ice, purification via gettering, and analysis on an IRMS via dual inlet mass spectrometry. 
+
+Description of data processing:
+Measured against a modern air standard
+
+Description of data content:
+Noble gas measurements and reconstructed mean ocean temperature
+
+Limitations and issues:
+
+
+Checkboxes:
+* All the data are referenced in time and space.
+* The data column, properties, and attributes listed/used in the data files are explained either in the description and/or the data files themselves.
+* Graphs and maps (if provided) have legends.
