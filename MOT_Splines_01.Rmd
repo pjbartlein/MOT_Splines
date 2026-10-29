@@ -31,14 +31,62 @@ pdf.options(useDingbats = TRUE)
 ```{r child="Intro_01.md"}
 ```
 
-# Set up #
+# Read data #
 
-Set path and filenames:
+Load the neccessary packages. `{readxl}` and `{writexl}` read and write Excel files, `{Hmisc}` adds supplemental tick marks and plots, and `{matrixStats}` is used to get the bootstrap confidence itervals.
 
-```{r pathnames}
-# paths for input .csv files -- modify as appropriate
-datapath <- "~/Projects/globalT/MOT_Splines/data"
+```{r}
+library(readxl, writexl)
+library(Hmisc)
+library(matrixStats)
 ```
 
-$$RSS\left(f,\lambda \right)=\sum_{i=1}^{n} {w_{i}{\left(y_{i}-f\left(x_{i}\right)\right)}^{2}}+\lambda \int {{\left[f^{\prime \prime }\left(x\right)\right]}^{2}dx,}$$
-$RSS\left(f,\lambda \right)=\sum_{i=1}^{n} {w_{i}{\left(y_{i}-f\left(x_{i}\right)\right)}^{2}}+\lambda \int {{\left[f^{\prime \prime }\left(x\right)\right]}^{2}dx,}$
+Read the Allen Hills "long" snapshot data, and add 0.5 °C to account for the bias in the MOT anomalies.
+
+```{r read data}
+# Allen_Hills_long data
+# columns Q, X, Y and Z from the "Data Summary" tab of AllanHills_XeKr_temp-recon_2026-pubData-2.xlsx
+data_path <- "~/Projects/globalT/MOT_Splines/data/"
+file_name <- "AH_long.xlsx" 
+xlxs_file <- paste(data_path, file_name, sep = "")
+AH_long <- read_excel(xlxs_file)
+head(AH_long); tail(AH_long)
+
+# MOT_anomaly + 0.5C
+AH_long$MOT_anomaly <- AH_long$MOT_anomaly + 0.5
+```
+
+Read Shackleton et al.'s fitted spline, and add 0.5 °C.
+
+```{r}
+# spline from paper
+# columns A-D from the "Splined Records" tab of AllanHills_XeKr_temp-recon_2026-pubData-2.xlsx
+file_name <- "AH_long_spline_paper.xlsx" 
+xlxs_file <- paste(data_path, file_name, sep = "")
+AH_long_spline_paper <- read_excel(xlxs_file)
+head(AH_long_spline_paper); tail(AH_long_spline_paper)
+
+# MOT + 0.5C
+AH_long_spline_paper$MOT_anomaly <- AH_long_spline_paper$MOT_anomaly + 0.5
+AH_long_spline_paper$MOT_lower <- AH_long_spline_paper$MOT_lower + 0.5
+AH_long_spline_paper$MOT_upper <- AH_long_spline_paper$MOT_upper + 0.5
+```
+
+Plot the data, and the spline from the paper.
+
+```{r}
+# Plot the data and spline from the paper
+# data
+plot(AH_long$MOT_anomaly ~ AH_long$AgeMa, type = "p", pch = 16, cex = 0.8, col = "blue",
+     xlim = c(3.5, 0), ylim = c(-3.0, 3.0), xlab = "Age (Ma)", ylab = "MOT anomaly (°C)", 
+     font.main = 1, main = "Allen Hills (long) + 0.5 °C")
+minor.tick(nx = 10, tick.ratio = 0.5)
+
+# add spline from paper
+lines(AH_long_spline_paper$AgeMa, AH_long_spline_paper$MOT_anomaly, lwd=2, col="blue")
+lines(AH_long_spline_paper$AgeMa, AH_long_spline_paper$MOT_lower, lwd=1, col="blue")
+lines(AH_long_spline_paper$AgeMa, AH_long_spline_paper$MOT_upper, lwd=1, col="blue")
+leg_label <- paste("Spline from Shackleton et al. 2026 (Fig. 1)", sep="")
+legend(3.5, -2.75, legend=c(leg_label), col="blue", lwd=2, bty="n")
+#dev.print(pdf, "AH_long_Shackleton_spline.pdf")
+```
