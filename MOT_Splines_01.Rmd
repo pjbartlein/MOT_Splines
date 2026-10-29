@@ -1,8 +1,6 @@
 ---
 title: "Charcoal data site locations"
 output:
-  md_document:
-    variant: gfm
   html_document:
     collapsed: false
     css: "SI-md-08.css"
@@ -12,6 +10,8 @@ output:
     theme: united
     toc: false
     toc_float: false
+  md_document:
+    variant: gfm
   word_document:
     fig_caption: true
     fig_height: 5
