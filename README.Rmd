@@ -1,5 +1,5 @@
 ---
-title: "Charcoal data site locations"
+title: "MOT Splines"
 output:
   md_document:
     variant: gfm
