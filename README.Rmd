@@ -309,8 +309,9 @@ lines(x_targ, y_pred_curve_01, lwd=2, col=model_colors[1])
 lines(AH_long_spline_paper$AgeMa, AH_long_spline_paper$MOT_anomaly, lwd=2, col="blue")
 lines(AH_long_spline_paper$AgeMa, AH_long_spline_paper$MOT_lower, lwd=1, col="blue")
 lines(AH_long_spline_paper$AgeMa, AH_long_spline_paper$MOT_upper, lwd=1, col="blue")
-leg_label <- paste("Smoothing Spline, spar = ", as.character(round(spar, 3)), ", lambda = ", as.character(round(lambda[1],7)),
-                   ", df = ", as.character(round(df[1], 2)), ", AIC = ", as.character(round(AIC[1], 2)),sep="")
+leg_label <- paste("Smoothing Spline, spar = ", as.character(round(spar, 3)), ", lambda = ", 
+    as.character(round(lambda[1],7)), ", df = ", as.character(round(df[1], 2)), 
+    ", AIC = ", as.character(round(AIC[1], 2)), sep="")
 legend(3.5, -2.75, legend=c(leg_label), col=c(model_colors[1]), lwd=2, bty="n")
 
 points(AH_long$MOT_anomaly ~ AH_long$AgeMa, pch = 16, cex = 0.8, col = "blue")
