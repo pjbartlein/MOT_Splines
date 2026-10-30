@@ -1,8 +1,6 @@
 ---
 title: "MOT Splines"
 output:
-  md_document:
-    variant: gfm
   word_document:
     fig_caption: true
     fig_height: 5
@@ -10,6 +8,8 @@ output:
     highlight: haddock
     reference_docx: mystyles.docx
     toc: false
+  md_document:
+    variant: gfm
   html_document:
     collapsed: false
     css: "SI-md-08.css"
