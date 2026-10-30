@@ -86,7 +86,8 @@ the bias in the MOT anomalies.
 
 ``` r
 # Allen_Hills_long data
-# columns Q, X, Y and Z from the "Data Summary" tab of AllanHills_XeKr_temp-recon_2026-pubData-2.xlsx
+# columns Q, X, Y and Z from the "Data Summary" tab of 
+# AllanHills_XeKr_temp-recon_2026-pubData-2.xlsx
 data_path <- "~/Projects/globalT/MOT_Splines/data/"
 file_name <- "AH_long.xlsx" 
 xlxs_file <- paste(data_path, file_name, sep = "")
@@ -270,7 +271,8 @@ for (k in 1:npts) {
   y_pred <- predict(curve_01, AH_long_spline_paper$AgeMa, deriv = 0)$y
   resid <- y_pred - (AH_long_spline_paper$MOT_anomaly)
   rss_opt[k] <- sum(resid^2 )
-  tss_opt[k] <- sum((AH_long_spline_paper$MOT_anomaly - mean(AH_long_spline_paper$MOT_anomaly))^2)
+  tss_opt[k] <- sum((AH_long_spline_paper$MOT_anomaly - 
+      mean(AH_long_spline_paper$MOT_anomaly))^2)
   rsq_opt[k] <- 1.0 - (rss_opt[k]/tss_opt[k])
 }
 ```
@@ -312,8 +314,8 @@ sigma2[1] <- sum(residuals[, 1]^2)/(nsamp - 1.0)
 rss[1] <- sum(residuals[, 1]^2 )
 tss[1] <- sum((AH_long$MOT_anomaly - mean(AH_long$MOT_anomaly))^2)
 # http://users.stat.umn.edu/~helwig/notes/smooth-spline-notes.html#aic-and-bic
-max_log_lik <- (-1.0 / (2.0 * sigma2[1])) * rss[1] - 1.0 * (nsamp / 2.0) * log(sigma2[1]) - 
-  1.0 * (nsamp / 2.0) * log(2 * pi)
+max_log_lik <- (-1.0 / (2.0 * sigma2[1])) * rss[1] - 
+  1.0 * (nsamp / 2.0) * log(sigma2[1]) -  1.0 * (nsamp / 2.0) * log(2 * pi)
 AIC[1] <- - 2.0 * max_log_lik + 2.0 * df[1]
 AIC[1] <- round(AIC[1], 2)
 print(AIC[1])
@@ -456,8 +458,9 @@ lines(x_targ, y_pred_curve_01, lwd=2, col=model_colors[1])
 lines(AH_long_spline_paper$AgeMa, AH_long_spline_paper$MOT_anomaly, lwd=2, col="blue")
 lines(AH_long_spline_paper$AgeMa, AH_long_spline_paper$MOT_lower, lwd=1, col="blue")
 lines(AH_long_spline_paper$AgeMa, AH_long_spline_paper$MOT_upper, lwd=1, col="blue")
-leg_label <- paste("Smoothing Spline, spar = ", as.character(round(spar, 3)), ", lambda = ", 
-    as.character(round(lambda[1],7)), ", df = ", as.character(round(df[1], 2)), 
+leg_label <- paste("Smoothing Spline, spar = ", as.character(round(spar, 3)), ", 
+    lambda = ", as.character(round(lambda[1],7)), ", 
+    df = ", as.character(round(df[1], 2)), 
     ", AIC = ", as.character(round(AIC[1], 2)), sep="")
 legend(3.5, -2.75, legend=c(leg_label), col=c(model_colors[1]), lwd=2, bty="n")
 
