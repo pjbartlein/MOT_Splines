@@ -161,7 +161,8 @@ tss_opt <- as.numeric(rep(0, npts))
 rsq_opt <- as.numeric(rep(0, npts))
 
 for (k in 1:npts) {
-  curve_01 <- smooth.spline(AH_long$AgeMa, AH_long$MOT_anomaly, w = ones, spar = spar_opt[k])
+  curve_01 <- smooth.spline(AH_long$AgeMa, AH_long$MOT_anomaly, w = ones, 
+                  spar = spar_opt[k])
   df_opt[k] <- curve_01$df; lambda_opt[k] <- curve_01$lambda
   
   y_pred <- predict(curve_01, AH_long_spline_paper$AgeMa, deriv = 0)$y
@@ -293,7 +294,7 @@ for (i in 1:nreps) {
   if (length(x_boot) == length(fit_boot$y)) {
     y_pred <- predict(fit_boot, x_targ, deriv = 0)$y
     if (i < 500) {
-      lines(x_targ, y_pred, col=adjustcolor(model_colors[j], alpha = 0.05))
+      lines(x_targ, y_pred, col=adjustcolor(model_colors[j], alpha = 0.1))
       # points(AH_long$AgeMa, y_pred, pch = 16, cex = 0.5, col = "red")
     }
     k <- k + 1
