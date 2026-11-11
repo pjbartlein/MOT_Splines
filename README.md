@@ -1,47 +1,50 @@
 ## Introduction
 
 Here we show the R code that we used to reproduce the Matlab `csaps()`
-smoothing spline fit to the Allen Hills “long shapshot” daa in
-Shackleton et al. (2026), and to fit an alternative optimized smoothing
-spline using the R `smooth.spline()` function. A smoothing spline is a
-cubic spline $f\left(x_{i}\right)$ that is fit to some data $y_{i}$
-by minimizing a “penalized” residual sum-of-squares
-$
-$$RSS\left(f,\lambda \right)=\{\textsf{goodness of fit}\}+\lambda\{\textsf{roughness}\}$$
+smoothing spline fit to the Allen Hills “long shapshot” in Shackleton et
+al. (2026), and to fit an alternative optimized smoothing spline R using
+the R `smooth.spline()` function. A smoothing splines is a cubic spline
+$`f\left(x_{i}\right)`$ that is fit to some data $`y_{i}`$ by minimizing
+a “penalized” residual sum-of-squares
 
-The first term on the right represents the goodness-of-fit of the spline
-curve to the data, and the second “penalty” term describes the rigidity
-or local variability of the curve – its wigglyness. If λ = 0, the fitted
-spline simply interpolates between the $y_{i}$’s, while as λ → ∞, the
-penalty term increases and the optimal fitted curve becomes a
-least-squares straight line (Hastie and Tibshirani, *Generalized
-Additive Models*. Routledge, Boca Raton, 1990
-<https://doi.org/10.1201/9780203753781>, sec. 3.5).
+``` math
+RSS\left(f,\lambda \right)=\{\textsf{goodness of fit}\}+\lambda\{\textsf{roughness}\}
+```
+
+The first term represents the goodness-of-fit of the spline curve to the
+data, while the second “penalty” term describes the rigidity or local
+variability of the curve – its wigglyness. If λ = 0, the fitted spline
+simply interpolates between the $`y_{i}`$’s, while as λ → ∞ the penalty
+term increases and the optimal fitted curve becomes a least-squares
+straight line (Hastie and Tibshirani, Generalized Additive Models.
+Routledge, Boca Raton, 1990 <https://doi.org/10.1201/9780203753781>,
+sec. 3.5).
 
 The specific objective function used by the Matlab `csaps()` function is
+``` math
+RSS\left(f,\mathrm{\lambda }\right)=\left\{\ p\sum_{i=1}^{n} {w_{i}{\left(y_{i}-f\left(x_{i}\right)\right)}^{2}}+\left(1-p\right)\int {\left[f^{\prime \prime }\left(x\right)\right]}^{2}\,dx\right\}
+```
 
-$$RSS\left(f,\mathrm{\lambda }\right)=\left\{\ p\sum_{i=1}^{n} {w_{i}{\left(y_{i}-f\left(x_{i}\right)\right)}^{2}}+\left(1-p\right)\int {\left[f^{\prime \prime }\left(x\right)\right]}^{2}\,dx\right\}$$
-
-
-where $f^{\prime \prime }\left(x\right)$ is the second derivative of
-the spline curve, the $w_{i}$’s are possible weights for each data
-value, $p$ is the user-selected smoothing parameter, and
-$p=1/\left(1+\mathrm{\lambda }\right)$. When $p=0$, a straight-line
-fit is obtained (i.e. as $λ→∞$, $p→0$), while if $λ=0$, then
-$p=1$ and the spline $(f\left(x_{i}\right))$ simply interpolates
+where $`f^{\prime \prime }\left(x\right)`$ is the second derivative of
+the spline curve, the $`w_{i}`$’s are possible weights for each data
+value, $`p`$ is the user-selected smoothing parameter, and
+$`p=1/\left(1+\mathrm{\lambda }\right)`$. When $`p=0`$, a straight-line
+fit is obtained (i.e. as $`λ→∞`$, $`p→0`$), while if $`λ=0`$, then
+$`p=1`$ and the spline $`(f\left(x_{i}\right))`$ simply interpolates
 between points.
 
 The objective function for the R `smooth.spline()` function is
+``` math
+RSS\left(f,\lambda \right)=\sum_{i=1}^{n} {w_{i}{\left(y_{i}-f\left(x_{i}\right)\right)}^{2}}+\lambda \int {{\left[f^{\prime \prime }\left(x\right)\right]}^{2}dx,}
+```
 
-$$RSS\left(f,\lambda \right)=\sum_{i=1}^{n} {w_{i}{\left(y_{i}-f\left(x_{i}\right)\right)}^{2}}+\lambda \int {{\left[f^{\prime \prime }\left(x\right)\right]}^{2}dx,}$$
-
-Again, If $λ=0$, the fitted spline simply interpolates between the
-$y_{i}$’s, while as $λ→∞$ the penalty term increases and the optimal
+Again, If $`λ=0`$, the fitted spline simply interpolates between the
+$`y_{i}`$’s, while as $`λ→∞`$ the penalty term increases and the optimal
 fitted curve becomes a least-squares straight line. The smoothing
 parameter is thus a measure of the “wiggliness” of the curve and can be
 set by a user at some fixed, scientifically based value, or it can be
-estimated by Generalized Cross Validation (GCV) (Wahba, G. *Spline
-Models for Observational Data*. (SIAM, Philadelphia, 1990)
+estimated by Generalized Cross Validation (GCV) (Wahba, G. Spline Models
+for Observational Data. (SIAM, Philadelphia, 1990)
 <https://doi.org/10.1137/1.9781611970128>, sec. 4.3) or some other
 approach. (GCV is a computationally efficient “leave-one-out” approach
 that is used to find an optimum trade-off between the goodness-of-fit
@@ -51,16 +54,16 @@ perfectly at the expense of being extremely non-smooth.) We use this
 approach below to obtain an “optimal” smoothing spline.
 
 In the case of the R function, there are three ways of specifying or
-describing the amount of smoothing: via $λ$; via a *spar* value, a
+describing the amount of smoothing: via $`λ`$; via a *spar* value, a
 scaleless description of the amount of smoothing which generally varies
-between 0 and 1; and via the equivalent degrees of freedom, $df$
+between 0 and 1; and via the equivalent degrees of freedom, $`df`$
 (Hastie and Tibshirani, 1990, p. 27), a general measure of the amount of
-fitting done by the spline. Low values of $df$ describe a fitted curve
+fitting done by the spline. Low values of $`df`$ describe a fitted curve
 with fewer inflections while higher values describe a more wiggly curve.
 
 Because the internal algorithms in the R and Matlab functions differ,
 there is no direct conversion between the methods (i.e. selecting the
-same value of $λ$ for both will not yield equivalent results). The R
+same value of $`λ`$ for both will not yield equivalent results). The R
 function can nevertheless be used to approximate the results of applying
 the Matlab function by iteratively varying the *spar* parameter, and
 minimizing the sum-of-squared differences between the R- and
@@ -70,10 +73,9 @@ R`smooth.spline()`function.
 
 ## Read data
 
-Load the neccessary packages: `{readxl}` and `{writexl}` which read and
-write Excel files, `{Hmisc}` which adds supplemental tick marks and
-plots, and `{matrixStats}` which is used to get the bootstrap confidence
-intervals.
+Load the neccessary packages. `{readxl}` and `{writexl}` read and write
+Excel files, `{Hmisc}` adds supplemental tick marks and plots, and
+`{matrixStats}` is used to get the bootstrap confidence itervals.
 
 ``` r
 library(readxl, writexl)
@@ -206,8 +208,8 @@ nfits
 
     ## [1] 527
 
-Set weights: `weights` weigh each observation by its uncertainty, while
-`ones` weigh each observation equally
+Set weights. `weights` weigh each observation by its uncertainty. `ones`
+weigh each observation equally
 
 ``` r
 # weights
@@ -247,11 +249,12 @@ F <- as.numeric(rep(0, ncurves))
 model_colors <- c("black", "purple", "red")
 ```
 
-## Reproduce the Matlab smoothing spline using the R smoothing spline
+## Reproduction of the Matlab smoothing spline with the R smoothing spline
 
 The R `smooth.spline()` equivalent of the Matlab `csaps()` spline in
-Shackleton et al. can be estimated by repeatedly fitting splines with
-different values of the *span* parameter ranging from 0.0 to 2.0 by 0.1:
+Shackleton et al. can be estimated by repeated fitting splines with
+different values of the *span* parameter, ranging from 0.0 to 2.0 by
+0.1:
 
 ``` r
 # brute-force optinmization of spar value
@@ -294,10 +297,10 @@ print(match_paper[k_opt, ])
     ##    spar_opt  df_opt   lambda_opt   rss_opt  tss_opt  rsq_opt
     ## 70     0.69 12.4969 5.544198e-05 0.2163786 219.8993 0.999016
 
-A *spar* value of 0.69 produces the best fit to the published spline.
+A *spar* value of 0.69 produces the best fit to published spline.
 
 Refit the approximated spline and calculate the bootstrap confidence
-limits (while suppressing the plotting of individual fitted splines).
+limits (while suppressing the individual fitted splines).
 
 ``` r
 # Shackleton et al. spline
@@ -359,11 +362,7 @@ for (i in 1:nreps) {
     fits_bootstrap[1:nfits, k] <- y_pred[1:nfits]
   }
 }
-```
 
-Get the confidence limits.
-
-``` r
 # get the various quantiles of the fitted splines
 boot_cl_01 <- rowQuantiles(fits_bootstrap, probs = c(0.025, 0.16, 0.50, 0.84, 0.975))
 head(boot_cl_01)
@@ -399,7 +398,7 @@ lines(x_targ, boot_cl_01[, 3], lty = "dotted", lwd = 2, col = model_colors[1])
 lines(x_targ, y_pred_curve_01, lwd=2, col=model_colors[1])
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
 
 ``` r
 #dev.print(pdf, "AH_long_Shackleton_spline.pdf")
@@ -407,7 +406,7 @@ lines(x_targ, y_pred_curve_01, lwd=2, col=model_colors[1])
 
 The blue solid line in the figure (mostly hidden, except at the ends) is
 the fitted spline from Shackleton et al. while the the thick black solid
-line is the approximated spline from `spline.smooth()`. The thin black
+line is the approximated spline form `spline.smooth()`. The thin black
 lines are the median and 16th and 84th percentiles (plus or minus one
 standard error) of the 10,000 bootstrap replications, while the black
 dashed lines are the 2.5th and 97.5th percentiles (plus or minus two
@@ -471,14 +470,14 @@ legend(3.5, -2.75, legend=c(leg_label), col=c(model_colors[1]), lwd=2, bty="n")
 points(AH_long$MOT_anomaly ~ AH_long$AgeMa, pch = 16, cex = 0.8, col = "blue")
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
 
 ``` r
 #dev.print(pdf, "AH_long_spline_comparison.pdf")
 ```
 
 The fitted spline is quite wiggly, reflected by the
-effective-degrees-of-freedom value ($df$) of 12.5. The first 500
+effective-degrees-of-freedom value ($`df`$) of 12.5. The first 500
 bootstrap replications are shown by the light lines on the figure. The
 individual plots show considerable variability and can be used to judge
 the robustness of the fit, which is not high. In a robust fit, the
@@ -486,10 +485,10 @@ individual plots would be quite similar to one another, as will be seen
 in the subsequent optimally fit spline. Instead, few of the 500
 replications show little similarity.
 
-## Optimally fit a smoothing spline
+## Optimally fit smoothing spline
 
 An alternative approach to smoothing-spline fitting is to allow the data
-to choose the optimal value of the smoothing parameter $\lambda$ using
+to choose the optimal value of the smoothing parameter $`\lambda`$ using
 generalized cross validation (GCV) (Wahba, 1990). GCV trades off the
 goodness-of-fit term against the smoothness of the curve:
 
@@ -588,7 +587,7 @@ legend(3.5, -2.75, legend=c(leg_label), col=c(model_colors[2]), lwd=2, bty="n")
 points(AH_long$MOT_anomaly ~ AH_long$AgeMa, pch = 16, cex = 0.8, col = "blue")
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-15-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-14-1.png)<!-- -->
 
 ``` r
 #dev.print(pdf, "AH_long_estimated_spline.pdf")
@@ -596,10 +595,10 @@ points(AH_long$MOT_anomaly ~ AH_long$AgeMa, pch = 16, cex = 0.8, col = "blue")
 
 The GCV optimal smoothing spline fit to the Allen Hills “long” data is
 much smoother than the one in the Shackleton et al. (2026) paper. The
-EDF ($df$) value is low, close to 3, and the AIC value is smaller
-while the adjusted ${R}^{2}$ is higher, indicating that the optimal
+EDF ($`df`$) value is low, close to 3, and the AIC value is smaller
+while the adjusted $`{R}^{2}`$ is higher, indicating that the optimal
 smoothing spline fits the data better (Burnham, K.P., & Anderson, D. R.
-(2004) *Sociological Methods & Research*, 33(2), 261–304.
+(2004) Sociological Methods & Research, 33(2), 261–304.
 <https://doi.org/10.1177/0049124104268644>).
 
 Note that the optimal smoothing spline is slightly concave upwards as
@@ -609,7 +608,7 @@ robustness of the fit.
 
 ## OLS linear fit
 
-The smoothing parameter $\lambda$ is close enough to 2.0 (which would
+The smoothing parameter $`\lambda`$ is close enough to 2.0 (which would
 yeild a linear fit) that an ordinary least squares linear fit would be
 worth considering:
 
@@ -721,7 +720,7 @@ legend(3.5, -2.75, legend=c(leg_label), col=model_colors[3], lwd=2, bty="n")
 points(AH_long$MOT_anomaly ~ AH_long$AgeMa, pch = 16, cex = 0.8, col = "blue")
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-17-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-16-1.png)<!-- -->
 
 The AIC for the OLS fit is slightly higher than for the optimal fit,
 suggesting that the slight curvature of the latter is beneficial
