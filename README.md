@@ -20,7 +20,10 @@ Additive Models*. Routledge, Boca Raton, 1990
 
 The specific objective function used by the Matlab `csaps()` function is
 
-$$RSS\left(f,\mathrm{\lambda }\right)=\left\{\ p\sum_{i=1}^{n} {w_{i}{\left(y_{i}-f\left(x_{i}\right)\right)}^{2}}+\left(1-p\right))\int{\left[f^{\prime \prime }\left(x\right)\right]}^{2}\,dx\right\}$$
+$$
+RSS\left(f,\mathrm{\lambda }\right)=\ p\sum_{i=1}^{n} {w_{i}{\left(y_{i}-f\left(x_{i}\right)\right)}^{2}}+\left(1-p\right)\int {\left[f^{\prime \prime }\left(x\right)\right]}^{2}dx,$$
+
+$$RSS\left(f,\mathrm{\lambda }\right)=\left\{\ p\sum_{i=1}^{n} {w_{i}{\left(y_{i}-f\left(x_{i}\right)\right)}^{2}}+\left(1-p\right)\int {\left[f^{\prime \prime }\left(x\right)\right]}^{2}\,dx\right\}$$
 
 where $f^{\prime \prime }\left(x\right)$ is the second derivative of
 the spline curve, the $w_{i}$’s are possible weights for each data
@@ -31,6 +34,8 @@ $p=1$ and the spline $(f\left(x_{i}\right))$ simply interpolates
 between points.
 
 The objective function for the R `smooth.spline()` function is
+
+$$RSS\left(f,\lambda \right)=\sum_{i=1}^{n} {w_{i}{\left(y_{i}-f\left(x_{i}\right)\right)}^{2}}+\lambda \int {{\left[f^{\prime \prime }\left(x\right)\right]}^{2}dx,}$$
 
 $$RSS\left(f,\lambda \right)=\sum_{i=1}^{n} {w_{i}{\left(y_{i}-f\left(x_{i}\right)\right)}^{2}}+\lambda \int {{\left[f^{\prime \prime }\left(x\right)\right]}^{2}dx,}$$
 
