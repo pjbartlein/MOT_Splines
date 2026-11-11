@@ -1,6 +1,15 @@
 ---
 title: "MOT Splines"
 output:
+  word_document:
+    fig_caption: true
+    fig_height: 5
+    fig_width: 6
+    highlight: haddock
+    reference_docx: mystyles.docx
+    toc: false
+  md_document:
+    variant: gfm
   html_document:
     collapsed: false
     css: "SI-md-08.css"
@@ -10,15 +19,6 @@ output:
     theme: united
     toc: false
     toc_float: false
-  md_document:
-    variant: gfm
-  word_document:
-    fig_caption: true
-    fig_height: 5
-    fig_width: 6
-    highlight: haddock
-    reference_docx: mystyles.docx
-    toc: false
 ---
 ```{r MOT_spline, echo=FALSE}
 options(width = 100)
