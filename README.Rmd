@@ -1,15 +1,6 @@
 ---
 title: "MOT Splines"
 output:
-  word_document:
-    fig_caption: true
-    fig_height: 5
-    fig_width: 6
-    highlight: haddock
-    reference_docx: mystyles.docx
-    toc: false
-  md_document:
-    variant: gfm
   html_document:
     collapsed: false
     css: "SI-md-08.css"
@@ -19,6 +10,15 @@ output:
     theme: united
     toc: false
     toc_float: false
+  md_document:
+    variant: gfm
+  word_document:
+    fig_caption: true
+    fig_height: 5
+    fig_width: 6
+    highlight: haddock
+    reference_docx: mystyles.docx
+    toc: false
 ---
 ```{r MOT_spline, echo=FALSE}
 options(width = 100)
@@ -34,7 +34,7 @@ pdf.options(useDingbats = TRUE)
 
 ## Read data ##
 
-Load the neccessary packages. `{readxl}` and `{writexl}` read and write Excel files, `{Hmisc}` adds supplemental tick marks and plots, and `{matrixStats}` is used to get the bootstrap confidence itervals.
+Load the neccessary packages:`{readxl}` and `{writexl}` which read and write Excel files, `{Hmisc}` which adds supplemental tick marks and plots, and `{matrixStats}` which is used to get the bootstrap confidence intervals.
 
 ```{r, echo=TRUE, results='hide'}
 library(readxl, writexl)
@@ -108,7 +108,7 @@ nfits <- length(x_targ)
 nfits
 ```
 
-Set weights. `weights` weigh each observation by its uncertainty. `ones` weigh each observation equally
+Set weights: `weights` weigh each observation by its uncertainty, while `ones` weigh each observation equally
 
 ```{r}
 # weights
@@ -146,9 +146,9 @@ F <- as.numeric(rep(0, ncurves))
 model_colors <- c("black", "purple", "red")
 ```
 
-## Reproduction of the Matlab smoothing spline with the R smoothing spline ##
+## Reproduce the Matlab smoothing spline using the R smoothing spline ##
 
-The R `smooth.spline()` equivalent of the Matlab `csaps()` spline in Shackleton et al. can be estimated by repeated fitting splines with different values of the *span* parameter, ranging from 0.0 to 2.0 by 0.1:
+The R `smooth.spline()` equivalent of the Matlab `csaps()` spline in Shackleton et al. can be estimated by repeatedly fitting splines with different values of the *span* parameter, ranging from 0.0 to 2.0 by 0.1:
 
 ```{r}
 # brute-force optinmization of spar value
@@ -183,9 +183,9 @@ print(k_opt)
 print(match_paper[k_opt, ])
 ```
 
-A *spar* value of 0.69 produces the best fit to published spline.
+A *spar* value of 0.69 produces the best fit to the published smoothing spline.
 
-Refit the approximated spline and calculate the bootstrap confidence limits (while suppressing the individual fitted splines).
+Refit the approximated spline and calculate the bootstrap confidence limits (while suppressing the plotting of the individual fitted splines).
 
 ```{r}
 # Shackleton et al. spline
@@ -237,7 +237,11 @@ for (i in 1:nreps) {
     fits_bootstrap[1:nfits, k] <- y_pred[1:nfits]
   }
 }
+```
 
+Get the quantiles of the `nreps` fitted values and plot them.
+
+```{r}
 # get the various quantiles of the fitted splines
 boot_cl_01 <- rowQuantiles(fits_bootstrap, probs = c(0.025, 0.16, 0.50, 0.84, 0.975))
 head(boot_cl_01)
@@ -265,7 +269,7 @@ lines(x_targ, y_pred_curve_01, lwd=2, col=model_colors[1])
 #dev.print(pdf, "AH_long_Shackleton_spline.pdf")
 ```
 
-The blue solid line in the figure (mostly hidden, except at the ends) is the fitted spline from Shackleton et al. while the the thick black solid line is the approximated spline form `spline.smooth()`. The thin black lines are the median and 16th and 84th percentiles (plus or minus one standard error) of the 10,000 bootstrap replications, while the black dashed lines are the 2.5th and 97.5th percentiles (plus or minus two standard errors). The standard errors from the Shackleton et al.'s spline do not match the ones here because the bootstramp samples are not identical.
+The blue solid line in the figure (mostly hidden, except at the ends) is the fitted spline from Shackleton et al. while the the thick black solid line is the approximated spline from `spline.smooth()`. The thin black lines are the median and 16th and 84th percentiles (plus or minus one standard error) of the 10,000 bootstrap replications, while the black dashed lines are the 2.5th and 97.5th percentiles (plus or minus two standard errors). The standard errors from the Shackleton et al.'s spline do not match the ones here because the bootstramp samples are not identical.
 
 Now replot the approximated Shackleton et al. spline including the fitted splines for the first 500 bootstrap replications (a sufficient number for examiing the nature of the replications).
 
@@ -405,7 +409,7 @@ points(AH_long$MOT_anomaly ~ AH_long$AgeMa, pch = 16, cex = 0.8, col = "blue")
 #dev.print(pdf, "AH_long_estimated_spline.pdf")
 ```
 
-The GCV optimal smoothing spline fit to the Allen Hills "long" data is much smoother than the one in the Shackleton et al. (2026) paper. The EDF ($df$) value is low, close to 3, and the AIC value is smaller while the adjusted ${R}^{2}$ is higher, indicating that the optimal smoothing spline fits the data better (Burnham, K.P., & Anderson, D. R. (2004) Sociological Methods & Research, 33(2), 261–304. https://doi.org/10.1177/0049124104268644).
+The GCV optimal smoothing spline fit to the Allen Hills "long" data is much smoother than the one in the Shackleton et al. (2026) paper. The EDF ($df$) value is low, close to 3, and the AIC value is smaller while the adjusted ${R}^{2}$ is higher, indicating that the optimal smoothing spline fits the data better (Burnham, K.P., & Anderson, D. R. (2004) *Sociological Methods & Research*, 33(2), 261–304. https://doi.org/10.1177/0049124104268644).
 
 Note that the optimal smoothing spline is slightly concave upwards as are most of the first 500 bootstrap replications. There is very little difference in the shape of the replications, testifying to the robustness of the fit.
 
