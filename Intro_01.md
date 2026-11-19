@@ -11,7 +11,7 @@ The first term on the right represents the goodness-of-fit of the spline curve t
 
 The specific objective function used by the Matlab `csaps()` function is
 $$
-RSS\left(f,\mathrm{\lambda }\right)=\left\{\ p\sum_{i=1}^{n} {w_{i}{\left(y_{i}-f\left(x_{i}\right)\right)}^{2}}+\left(1-p\right)\int {\left[f^{\prime \prime }\left(x\right)\right]}^{2}\,dx\right\}
+RSS\left(f,\mathrm{\lambda }\right)= p\sum_{i=1}^{n} {w_{i}{\left(y_{i}-f\left(x_{i}\right)\right)}^{2}}+\left(1-p\right)\int {\left[f^{\prime \prime }\left(x\right)\right]}^{2}\,dx
 $$
 
 where $f^{\prime \prime }\left(x\right)$ is the second derivative of the spline curve, the $w_{i}$’s are possible weights for each data value, $p$ is the user-selected smoothing parameter, and $p=1/\left(1+\mathrm{\lambda }\right)$. When $p=0$, a straight-line

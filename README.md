@@ -7,7 +7,9 @@ spline using the R `smooth.spline()` function. A smoothing splines is a
 cubic spline $`f\left(x_{i}\right)`$ that is fit to some data $`y_{i}`$
 by minimizing a “penalized” residual sum-of-squares
 
-$$RSS\left(f,\lambda \right)=\{\textsf{goodness of fit}\}+\lambda\cdot\{\textsf{roughness}\}$$
+$$
+RSS\left(f,\lambda \right)=\{\textsf{goodness of fit}\}+\lambda\cdot\{\textsf{roughness}\}
+$$
 
 The first term on the right represents the goodness-of-fit of the spline
 curve to the data, and the second “penalty” term describes the rigidity
@@ -19,8 +21,9 @@ Additive Models*. Routledge, Boca Raton, 1990
 <https://doi.org/10.1201/9780203753781>, sec. 3.5).
 
 The specific objective function used by the Matlab `csaps()` function is
-
-$$RSS\left(f,\mathrm{\lambda }\right)=\left\{\ p\sum_{i=1}^{n} {w_{i}{\left(y_{i}-f\left(x_{i}\right)\right)}^{2}}+\left(1-p\right)\int {\left[f^{\prime \prime }\left(x\right)\right]}^{2}\,dx\right\}$$
+$$
+RSS\left(f,\mathrm{\lambda }\right)=\ p\sum_{i=1}^{n} {w_{i}{\left(y_{i}-f\left(x_{i}\right)\right)}^{2}}+\left(1-p\right)\int {\left[f^{\prime \prime }\left(x\right)\right]}^{2}\,dx\
+$$
 
 where $`f^{\prime \prime }\left(x\right)`$ is the second derivative of
 the spline curve, the $`w_{i}`$’s are possible weights for each data
@@ -31,8 +34,9 @@ $`p=1`$ and the spline $`(f\left(x_{i}\right))`$ simply interpolates
 between points.
 
 The objective function for the R `smooth.spline()` function is
-
-$$RSS\left(f,\lambda \right)=\sum_{i=1}^{n} {w_{i}{\left(y_{i}-f\left(x_{i}\right)\right)}^{2}}+\lambda \int {{\left[f^{\prime \prime }\left(x\right)\right]}^{2}dx,}$$
+$$
+RSS\left(f,\lambda \right)=\sum_{i=1}^{n} {w_{i}{\left(y_{i}-f\left(x_{i}\right)\right)}^{2}}+\lambda \int {{\left[f^{\prime \prime }\left(x\right)\right]}^{2}dx,}
+$$
 
 Again, If $`λ=0`$, the fitted spline simply interpolates between the
 $`y_{i}`$’s, while as $`λ→∞`$ the penalty term increases and the optimal
