@@ -4,7 +4,7 @@ library(matrixStats)
 
 # bootstraped splines =============================================================================================
 
-# Allen_Hills_long data
+# Allan_Hills_long data
 # columns Q, X, Y and Z from the "Data Summary" tab of AllanHills_XeKr_temp-recon_2026-pubData-2.xlsx
 data_path <- "~/Projects/globalT/MOT_Splines/data/"
 file_name <- "AH_long.xlsx" 
@@ -31,7 +31,7 @@ AH_long_spline_paper$MOT_upper <- AH_long_spline_paper$MOT_upper + 0.5
 # data
 plot(AH_long$MOT_anomaly ~ AH_long$AgeMa, type = "p", pch = 16, cex = 0.8, col = "blue",
      xlim = c(3.5, 0), ylim = c(-3.0, 3.0), xlab = "Age (Ma)", ylab = "MOT anomaly (°C)", 
-     font.main = 1, main = "Allen Hills (long) + 0.5 °C")
+     font.main = 1, main = "Allan Hills (long) + 0.5 °C")
 minor.tick(nx = 10, tick.ratio = 0.5)
 
 # add spline from paper
@@ -40,7 +40,7 @@ lines(AH_long_spline_paper$AgeMa, AH_long_spline_paper$MOT_lower, lwd=1, col="bl
 lines(AH_long_spline_paper$AgeMa, AH_long_spline_paper$MOT_upper, lwd=1, col="blue")
 leg_label <- paste("Spline from Shackleton et al. 2026 (Fig. 1)", sep="")
 legend(3.5, -2.75, legend=c(leg_label), col="blue", lwd=2, bty="n")
-#dev.print(pdf, "AH_long_Shackleton_spline.pdf")
+dev.print(pdf, "AH_long_spline_comparison.pdf")
 
 # Set-up tasks
 
@@ -168,13 +168,13 @@ lines(x_targ, boot_cl_01[, 5], lty = "dotted", lwd = 2, col = model_colors[1])
 lines(x_targ, boot_cl_01[, 3], lwd = 2, col = model_colors[1])
 lines(x_targ, y_pred_curve_01, lwd=2, col=model_colors[1])
 
-#dev.print(pdf, "AH_long_Shackleton_spline.pdf")
+dev.print(pdf, "AH_long_spline_comparison.pdf")
 
 # replot with first 500 replicates shown
 
 plot(AH_long$MOT_anomaly ~ AH_long$AgeMa, type = "p", pch = 16, cex = 0.8, col = "blue",
      xlim = c(3.5, 0), ylim = c(-3.0, 3.0), xlab = "Age (Ma)", ylab = "MOT anomaly (°C)", 
-     font.main = 1, main = "Allen Hills (long) + 0.5 °C")
+     font.main = 1, main = "Allan Hills (long) + 0.5 °C")
 minor.tick(nx = 10, tick.ratio = 0.5)
 
 # bootstrap estimates of fitted values
@@ -218,7 +218,7 @@ legend(3.5, -2.75, legend=c(leg_label), col=c(model_colors[1]), lwd=2, bty="n")
 
 points(AH_long$MOT_anomaly ~ AH_long$AgeMa, pch = 16, cex = 0.8, col = "blue")
 
-#dev.print(pdf, "AH_long_spline_comparison.pdf")
+dev.print(pdf, "AH_long_Shackleton_spline.pdf")
 
 # optimal
 
@@ -246,7 +246,7 @@ rsq[2]; adj_rsq[2]
 
 plot(AH_long$MOT_anomaly ~ AH_long$AgeMa, type = "p", pch = 16, cex = 0.8, col = "blue",
      xlim = c(3.5, 0), ylim = c(-3.0, 3.0), xlab = "Age (Ma)", ylab = "MOT anomaly (°C)", 
-     font.main = 1, main = "Allen Hills (long) + 0.5 °C")
+     font.main = 1, main = "Allan Hills (long) + 0.5 °C")
 minor.tick(nx = 10, tick.ratio = 0.5)
 
 # bootsrap CL's
@@ -287,7 +287,8 @@ leg_label <- paste("Smoothing Spline, estimated lambda = ", as.character(round(l
 legend(3.5, -2.75, legend=c(leg_label), col=c(model_colors[2]), lwd=2, bty="n")
 
 points(AH_long$MOT_anomaly ~ AH_long$AgeMa, pch = 16, cex = 0.8, col = "blue")
-#dev.print(pdf, "AH_long_estimated_spline.pdf")
+
+dev.print(pdf, "AH_long_optimized_spline.pdf")
 
 # OLS
 
@@ -310,7 +311,7 @@ rsq[3]; adj_rsq[3]
 
 plot(AH_long$MOT_anomaly ~ AH_long$AgeMa, type = "p", pch = 16, cex = 0.8, col = "blue",
      xlim = c(3.5, 0), ylim = c(-3.0, 3.0), xlab = "Age (Ma)", ylab = "MOT anomaly (°C)", 
-     font.main = 1, main = "Allen Hills (long) + 0.5 °C")
+     font.main = 1, main = "Allan Hills (long) + 0.5 °C")
 minor.tick(nx = 10, tick.ratio = 0.5)
 
 # bootsrap CL's
@@ -348,3 +349,5 @@ leg_label <- paste("OLS Linear Model", ", AIC = ", as.character(round(AIC[3], 2)
 legend(3.5, -2.75, legend=c(leg_label), col=model_colors[3], lwd=2, bty="n")
 
 points(AH_long$MOT_anomaly ~ AH_long$AgeMa, pch = 16, cex = 0.8, col = "blue")
+
+dev.print(pdf, "AH_long_linear.pdf")

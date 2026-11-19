@@ -1,18 +1,18 @@
 ## Introduction
 
 Here we show the R code that we used to reproduce the Matlab `csaps()`
-smoothing spline fit to the Allen Hills “long shapshot” data in
+smoothing spline fit to the Allan Hills “long shapshot” data in
 Shackleton et al. (2026), and to fit an alternative optimized smoothing
 spline using the R `smooth.spline()` function. A smoothing splines is a
-cubic spline $f\left(x_{i}\right)$ that is fit to some data $y_{i}$
+cubic spline $`f\left(x_{i}\right)`$ that is fit to some data $`y_{i}`$
 by minimizing a “penalized” residual sum-of-squares
 
-$$RSS\left(f,\lambda \right)=\{\textsf{goodness of fit}\}+\lambda\{\textsf{roughness}\}$$
+$$RSS\left(f,\lambda \right)=\{\textsf{goodness of fit}\}+\lambda\cdot\{\textsf{roughness}\}$$
 
 The first term on the right represents the goodness-of-fit of the spline
 curve to the data, and the second “penalty” term describes the rigidity
 or local variability of the curve – its wigglyness. If λ = 0, the fitted
-spline simply interpolates between the $y_{i}$’s, while as λ → ∞, the
+spline simply interpolates between the $`y_{i}`$’s, while as λ → ∞, the
 penalty term increases and the optimal fitted curve becomes a
 least-squares straight line (Hastie and Tibshirani, *Generalized
 Additive Models*. Routledge, Boca Raton, 1990
@@ -20,27 +20,26 @@ Additive Models*. Routledge, Boca Raton, 1990
 
 The specific objective function used by the Matlab `csaps()` function is
 
-$$
-RSS\left(f,\mathrm{\lambda }\right)=\ p\sum_{i=1}^{n} {w_{i}{\left(y_{i}-f\left(x_{i}\right)\right)}^{2}}+\left(1-p\right)\int {\left[f^{\prime \prime }\left(x\right)\right]}^{2}dx,$$
+$$RSS\left(f,\mathrm{\lambda }\right)=\left\{\ p\sum_{i=1}^{n} {w_{i}{\left(y_{i}-f\left(x_{i}\right)\right)}^{2}}+\left(1-p\right)\int {\left[f^{\prime \prime }\left(x\right)\right]}^{2}\,dx\right\}$$
 
-where $f^{\prime \prime }\left(x\right)$ is the second derivative of
-the spline curve, the $w_{i}$’s are possible weights for each data
-value, $p$ is the user-selected smoothing parameter, and
-$p=1/\left(1+\mathrm{\lambda }\right)$. When $p=0$, a straight-line
-fit is obtained (i.e. as $λ→∞$, $p→0$), while if $λ=0$, then
-$p=1$ and the spline $(f\left(x_{i}\right))$ simply interpolates
+where $`f^{\prime \prime }\left(x\right)`$ is the second derivative of
+the spline curve, the $`w_{i}`$’s are possible weights for each data
+value, $`p`$ is the user-selected smoothing parameter, and
+$`p=1/\left(1+\mathrm{\lambda }\right)`$. When $`p=0`$, a straight-line
+fit is obtained (i.e. as $`λ→∞`$, $`p→0`$), while if $`λ=0`$, then
+$`p=1`$ and the spline $`(f\left(x_{i}\right))`$ simply interpolates
 between points.
 
 The objective function for the R `smooth.spline()` function is
 
 $$RSS\left(f,\lambda \right)=\sum_{i=1}^{n} {w_{i}{\left(y_{i}-f\left(x_{i}\right)\right)}^{2}}+\lambda \int {{\left[f^{\prime \prime }\left(x\right)\right]}^{2}dx,}$$
 
-Again, If $λ=0$, the fitted spline simply interpolates between the
-$y_{i}$’s, while as $λ→∞$ the penalty term increases and the optimal
+Again, If $`λ=0`$, the fitted spline simply interpolates between the
+$`y_{i}`$’s, while as $`λ→∞`$ the penalty term increases and the optimal
 fitted curve becomes a least-squares straight line. The smoothing
 parameter is thus a measure of the “wiggliness” of the curve and can be
 set by a user at some fixed, scientifically based value, or it can be
-estimated by Generalized Cross Validation (GCV) (Wahba, G. *Spline
+estimated by Generalized Cross Validation (GCV) (Wahba, G., *Spline
 Models for Observational Data*. (SIAM, Philadelphia, 1990)
 <https://doi.org/10.1137/1.9781611970128>, sec. 4.3) or some other
 approach. (GCV is a computationally efficient “leave-one-out” approach
@@ -51,16 +50,16 @@ perfectly at the expense of being extremely non-smooth.) We use this
 approach below to obtain an “optimal” smoothing spline.
 
 In the case of the R function, there are three ways of specifying or
-describing the amount of smoothing: via $λ$; via a *spar* value, a
+describing the amount of smoothing: via $`λ`$; via a *spar* value, a
 scaleless description of the amount of smoothing which generally varies
-between 0 and 1; and via the equivalent degrees of freedom, $df$
+between 0 and 1; and via the equivalent degrees of freedom, $`df`$
 (Hastie and Tibshirani, 1990, p. 27), a general measure of the amount of
-fitting done by the spline. Low values of $df$ describe a fitted curve
+fitting done by the spline. Low values of $`df`$ describe a fitted curve
 with fewer inflections while higher values describe a more wiggly curve.
 
 Because the internal algorithms in the R and Matlab functions differ,
 there is no direct conversion between the methods (i.e. selecting the
-same value of $λ$ for both will not yield equivalent results). The R
+same value of $`λ`$ for both will not yield equivalent results). The R
 function can nevertheless be used to approximate the results of applying
 the Matlab function by iteratively varying the *spar* parameter, and
 minimizing the sum-of-squared differences between the R- and
@@ -81,11 +80,11 @@ library(Hmisc)
 library(matrixStats)
 ```
 
-Read the Allen Hills “long” snapshot data, and add 0.5 °C to account for
+Read the Allan Hills “long” snapshot data, and add 0.5 °C to account for
 the bias in the MOT anomalies.
 
 ``` r
-# Allen_Hills_long data
+# Allan_Hills_long data
 # columns Q, X, Y and Z from the "Data Summary" tab of 
 # AllanHills_XeKr_temp-recon_2026-pubData-2.xlsx
 data_path <- "~/Projects/globalT/MOT_Splines/data/"
@@ -165,7 +164,7 @@ Plot the data, and the spline from the paper.
 # data
 plot(AH_long$MOT_anomaly ~ AH_long$AgeMa, type = "p", pch = 16, cex = 0.8, col = "blue",
      xlim = c(3.5, 0), ylim = c(-3.0, 3.0), xlab = "Age (Ma)", ylab = "MOT anomaly (°C)", 
-     font.main = 1, main = "Allen Hills (long) + 0.5 °C")
+     font.main = 1, main = "Allan Hills (long) + 0.5 °C")
 minor.tick(nx = 10, tick.ratio = 0.5)
 
 # add spline from paper
@@ -179,7 +178,7 @@ legend(3.5, -2.75, legend=c(leg_label), col="blue", lwd=2, bty="n")
 ![](README_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
 
 ``` r
-#dev.print(pdf, "AH_long_Shackleton_spline.pdf")
+#dev.print(pdf, "AH_long_Shackleton_spline_from_paper.pdf")
 ```
 
 ## Set-up tasks
@@ -383,7 +382,7 @@ head(boot_cl_01)
 ``` r
 plot(AH_long$MOT_anomaly ~ AH_long$AgeMa, type = "p", pch = 16, cex = 0.8, col = "blue",
      xlim = c(3.5, 0), ylim = c(-3.0, 3.0), xlab = "Age (Ma)", ylab = "MOT anomaly (°C)", 
-     font.main = 1, main = "Allen Hills (long) + 0.5 °C")
+     font.main = 1, main = "Allan Hills (long) + 0.5 °C")
 minor.tick(nx = 10, tick.ratio = 0.5)
 
 # add spline from paper
@@ -427,7 +426,7 @@ number for examiing the nature of the replications).
 
 plot(AH_long$MOT_anomaly ~ AH_long$AgeMa, type = "p", pch = 16, cex = 0.8, col = "blue",
      xlim = c(3.5, 0), ylim = c(-3.0, 3.0), xlab = "Age (Ma)", ylab = "MOT anomaly (°C)", 
-     font.main = 1, main = "Allen Hills (long) + 0.5 °C")
+     font.main = 1, main = "Allan Hills (long) + 0.5 °C")
 minor.tick(nx = 10, tick.ratio = 0.5)
 
 # bootstrap estimates of fitted values
@@ -477,11 +476,14 @@ points(AH_long$MOT_anomaly ~ AH_long$AgeMa, pch = 16, cex = 0.8, col = "blue")
 ![](README_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
 
 ``` r
-#dev.print(pdf, "AH_long_spline_comparison.pdf")
+dev.print(pdf, "AH_long_Shackleton_spline.pdf")
 ```
 
+    ## quartz_off_screen 
+    ##                 2
+
 The fitted spline is quite wiggly, reflected by the
-effective-degrees-of-freedom value ($df$) of 12.5. The first 500
+effective-degrees-of-freedom value ($`df`$) of 12.5. The first 500
 bootstrap replications are shown by the light lines on the figure. The
 individual plots show considerable variability and can be used to judge
 the robustness of the fit, which is not high. In a robust fit, the
@@ -492,7 +494,7 @@ replications show little similarity.
 ## Optimally fit smoothing spline
 
 An alternative approach to smoothing-spline fitting is to allow the data
-to choose the optimal value of the smoothing parameter $\lambda$ using
+to choose the optimal value of the smoothing parameter $`\lambda`$ using
 generalized cross validation (GCV) (Wahba, 1990). GCV trades off the
 goodness-of-fit term against the smoothness of the curve:
 
@@ -537,7 +539,7 @@ limits and first 500 bootstrap replications.
 ``` r
 plot(AH_long$MOT_anomaly ~ AH_long$AgeMa, type = "p", pch = 16, cex = 0.8, col = "blue",
      xlim = c(3.5, 0), ylim = c(-3.0, 3.0), xlab = "Age (Ma)", ylab = "MOT anomaly (°C)", 
-     font.main = 1, main = "Allen Hills (long) + 0.5 °C")
+     font.main = 1, main = "Allan Hills (long) + 0.5 °C")
 minor.tick(nx = 10, tick.ratio = 0.5)
 
 # bootsrap CL's
@@ -594,13 +596,16 @@ points(AH_long$MOT_anomaly ~ AH_long$AgeMa, pch = 16, cex = 0.8, col = "blue")
 ![](README_files/figure-gfm/unnamed-chunk-15-1.png)<!-- -->
 
 ``` r
-#dev.print(pdf, "AH_long_estimated_spline.pdf")
+dev.print(pdf, "AH_long_optimized_spline.pdf")
 ```
 
-The GCV optimal smoothing spline fit to the Allen Hills “long” data is
+    ## quartz_off_screen 
+    ##                 2
+
+The GCV optimal smoothing spline fit to the Allan Hills “long” data is
 much smoother than the one in the Shackleton et al. (2026) paper. The
-EDF ($df$) value is low, close to 3, and the AIC value is smaller
-while the adjusted ${R}^{2}$ is higher, indicating that the optimal
+EDF ($`df`$) value is low, close to 3, and the AIC value is smaller
+while the adjusted $`{R}^{2}`$ is higher, indicating that the optimal
 smoothing spline fits the data better (Burnham, K.P., & Anderson, D. R.
 (2004) *Sociological Methods & Research*, 33(2), 261–304.
 <https://doi.org/10.1177/0049124104268644>).
@@ -612,7 +617,7 @@ robustness of the fit.
 
 ## OLS linear fit
 
-The smoothing parameter $\lambda$ is close enough to 2.0 (which would
+The smoothing parameter $`\lambda`$ is close enough to 2.0 (which would
 yeild a linear fit) that an ordinary least squares linear fit would be
 worth considering:
 
@@ -673,7 +678,7 @@ and first 500 bootstrap replications.
 ``` r
 plot(AH_long$MOT_anomaly ~ AH_long$AgeMa, type = "p", pch = 16, cex = 0.8, col = "blue",
      xlim = c(3.5, 0), ylim = c(-3.0, 3.0), xlab = "Age (Ma)", ylab = "MOT anomaly (°C)", 
-     font.main = 1, main = "Allen Hills (long) + 0.5 °C")
+     font.main = 1, main = "Allan Hills (long) + 0.5 °C")
 minor.tick(nx = 10, tick.ratio = 0.5)
 
 # bootsrap CL's
@@ -725,6 +730,10 @@ points(AH_long$MOT_anomaly ~ AH_long$AgeMa, pch = 16, cex = 0.8, col = "blue")
 ```
 
 ![](README_files/figure-gfm/unnamed-chunk-17-1.png)<!-- -->
+
+``` r
+#dev.print(pdf, "AH_long_linear.pdf")
+```
 
 The AIC for the OLS fit is slightly higher than for the optimal fit,
 suggesting that the slight curvature of the latter is beneficial
